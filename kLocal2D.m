@@ -1,22 +1,39 @@
-function k_local = kLocal2D(p)
-
-k_local = zeros(14, 14);
+function k_local = kLocal2D(p, Eci, Emi, nooi, bi, total_ai, hi, ni, axi, ayi, axyi, kw_bari, ks_bari)
 
 if p==0
-    k_local = load('kLocal2DP0.mat');
+    data = load('kLocal2DP0.mat');
 elseif p==1
-    k_local = load('kLocal2DP1.mat');
+    data = load('kLocal2DP1.mat');
 elseif p==2
-    k_local = load('kLocal2DP2.mat');    
+    data = load('kLocal2DP2.mat');    
 elseif p==3
-    k_local = load('kLocal2DP3.mat');    
+    data = load('kLocal2DP3.mat');    
 elseif p==4
-    k_local = load('kLocal2DP4.mat');
+    data = load('kLocal2DP4.mat');
 elseif p==5
-    k_local = load('kLocal2DP5.mat');
+    data = load('kLocal2DP5.mat');
 elseif p==10
-    k_local = load('kLocal2DP10.mat');
+    data = load('kLocal2DP10.mat');
 else
 end
+
+Ec = sym('Ec');
+Em = sym('Em');
+noo = sym('noo');
+b = sym('b');
+total_a = sym('total_a');
+h = sym('h');
+n = sym('n');
+ax = sym('ax');
+ay = sym('ay');
+axy = sym('axy');
+kw_bar = sym('kw_bar');
+ks_bar = sym('ks_bar');
+
+k_local = data.k_local;
+values = {Eci, Emi, nooi, bi, total_ai, hi, ni, axi, ayi, axyi, kw_bari, ks_bari};
+
+k_local = subs(k_local, {Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar}, values);
+k_local = double(k_local);
 end
 

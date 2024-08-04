@@ -68,14 +68,10 @@ elseif SSSS==0 && SSSC==1 && SSSF==0 && SCSC==0 && SCSF==0 && SFSF==0
     boundaryCondition = "SSSC";
 elseif SSSS==0 && SSSC==0 && SSSF==1 && SCSC==0 && SCSF==0 && SFSF==0
     boundaryCondition = "SSSF";
-elseif SSSS==0 && SSSC==0 && SSSF==0 && SCSC==1 && SCSF==0 && SFSF==0
+    elseif SSSS==0 && SSSC==0 && SSSF==0 && SCSC==1 && SCSF==0 && SFSF==0
     boundaryCondition = "SCSC";
-elseif SSSS==0 && SSSC==0 && SSSF==0 && SCSC==0 && SCSF==1 && SFSF==0
-    boundaryCondition = "SCSF";
-elseif SSSS==0 && SSSC==0 && SSSF==0 && SCSC==0 && SCSF==0 && SFSF==1
-    boundaryCondition = "SFSF";
-else
-    error("Please choose only one boundary condition from 'inputs.xlsx' in each run!")
+        elseif SSSS==0 && SSSC==0 && SSSF==0 && SCSC==0 && SCSF==1 && SFSF==0
+            elseif SSSS==0 && SSSC==0 && SSSF==0 && SCSC==0 && SCSF==0 && SFSF==1
 end
 
 

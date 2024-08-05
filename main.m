@@ -255,8 +255,69 @@ elseif plateTheory == "Quasi-3D"
     end
 end
 
+f_rmL = fliplr(rmL);
+f_rmR = fliplr(rmR);
 
 
+if plateTheory == "2D"
+    for i = 1:length(rmL)
+        k_global(8*n+f_rmL(i), :) = [];
+        k_global(:, 8*n+f_rmL(i)) = [];
+
+        kg_global(8*n+f_rmL(i), :) = [];
+        kg_global(:, 8*n+f_rmL(i)) = [];
+        
+        kw_global(8*n+f_rmL(i), :) = [];
+        kw_global(:, 8*n+f_rmL(i)) = [];
+        
+        ks_global(8*n+f_rmL(i), :) = [];
+        ks_global(:, 8*n+f_rmL(i)) = [];
+    end
+
+    for i = 1:length(rmR)
+        k_global(f_rmR(i), :) = [];
+        k_global(:, f_rmR(i)) = [];
+        
+        kg_global(f_rmR(i), :) = [];
+        kg_global(:, f_rmR(i)) = [];
+        
+        kw_global(f_rmR(i), :) = [];
+        kw_global(:, f_rmR(i)) = [];
+        
+        ks_global(f_rmR(i), :) = [];
+        ks_global(:, f_rmR(i)) = [];
+    end
+    
+    
+elseif plateTheory == "Quasi-3D"
+    for i = 1:length(rmL)
+        k_global(10*n+f_rmL(i), :) = [];
+        k_global(:, 10*n+f_rmL(i)) = [];
+        
+        kg_global(10*n+f_rmL(i), :) = [];
+        kg_global(:, 10*n+f_rmL(i)) = [];
+        
+        kw_global(10*n+f_rmL(i), :) = [];
+        kw_global(:, 10*n+f_rmL(i)) = [];
+        
+        ks_global(10*n+f_rmL(i), :) = [];
+        ks_global(:, 10*n+f_rmL(i)) = [];
+    end
+    
+    for i = 1:length(rmR)
+        k_global(f_rmR(i), :) = [];
+        k_global(:, f_rmR(i)) = [];
+        
+        kg_global(f_rmR(i), :) = [];
+        kg_global(:, f_rmR(i)) = [];
+        
+        kw_global(f_rmR(i), :) = [];
+        kw_global(:, f_rmR(i)) = [];
+        
+        ks_global(f_rmR(i), :) = [];
+        ks_global(:, f_rmR(i)) = [];
+    end
+end
 
 
 %% K) Calculating Eigenvalue and Eigenvector
@@ -270,7 +331,7 @@ dddd = min(Max_D);
 
 
 %% M) Non-dimensionalization
-% dddd*((total_a)^2)*12*(1-noo^2) / ((pi^2)*(h^2)*Em)
+dddd*((total_a)^2)*12*(1-noo^2) / ((pi^2)*(h^2)*Em)
 t1 = (total_a^2)/(h^2);
 t2 = 12*(1-noo^2)/Em;
 dddd*t1*t2

@@ -16,7 +16,7 @@ a = total_a/n;
 syms z x y
 
 
-E = (Ec-Em)*(((z/h)+0.5)^10)+Em;
+E = (Ec-Em)*(((z/h)+0.5)^0.5)+Em;
 D = [
     [ (E*(noo - 1))/((2*noo - 1)*(noo + 1)),      -(E*noo)/((2*noo - 1)*(noo + 1)),      -(E*noo)/((2*noo - 1)*(noo + 1)),             0,             0,             0]
     [      -(E*noo)/((2*noo - 1)*(noo + 1)), (E*(noo - 1))/((2*noo - 1)*(noo + 1)),      -(E*noo)/((2*noo - 1)*(noo + 1)),             0,             0,             0]
@@ -98,10 +98,10 @@ disp("U V W")
 kg_local = int( int( int( ax*( diff(U, x).*diff(U, x)' + diff(V, x).*diff(V, x)' + diff(W, x).*diff(W, x)' ) + ay*( diff(U, y).* diff(U, y)' + diff(V, y).* diff(V, y)' + diff(W, y).* diff(W, y)' ) + axy*( diff(U, x).*diff(U, y)' + diff(U, x).*diff(U, y)' + diff(V, x).*diff(V, y)' + diff(V, x).*diff(V, y)' + diff(W, x).* diff(W, y)' + diff(W, x).*diff(W, y)' ), x, 0, a), y, 0, b), z, -0.5*h, 0.5*h);
 disp("kg_local")
 
-save('kLocal3DP10.mat', 'k_local')
-save('kgLocal3DP10.mat', 'kg_local')
-save('kwLocal3DP10.mat', 'kw_local')
-save('ksLocal3DP10.mat', 'ks_local')
+save('kLocal3DP05.mat', 'k_local')
+save('kgLocal3DP05.mat', 'kg_local')
+save('kwLocal3DP05.mat', 'kw_local')
+save('ksLocal3DP05.mat', 'ks_local')
 
 beep on
 beep

@@ -13,7 +13,7 @@ a = total_a/n;
 
 % --------   Flextural Rigidity  --------%
 syms z x y
-E = (Ec-Em)*(((z/h)+0.5)^0)+Em;
+E = (Ec-Em)*(((z/h)+0.5)^0.5)+Em;
 
 d = E/(1-noo^2);
 %
@@ -95,6 +95,11 @@ disp("U V W")
 %% H) Calculating Geometric Stiffness Matrix (18*18)
 kg_local = int( int( int( ax*( diff(U, x).*diff(U, x)' + diff(V, x).*diff(V, x)' + diff(W, x).*diff(W, x)' ) + ay*( diff(U, y).* diff(U, y)' + diff(V, y).* diff(V, y)' + diff(W, y).* diff(W, y)' ) + axy*( diff(U, x).*diff(U, y)' + diff(U, x).*diff(U, y)' + diff(V, x).*diff(V, y)' + diff(V, x).*diff(V, y)' + diff(W, x).* diff(W, y)' + diff(W, x).*diff(W, y)' ), x, 0, a), y, 0, b), z, -0.5*h, 0.5*h);
 disp("kg_local")
+
+save('kLocal2DP05.mat', 'k_local')
+save('kgLocal2DP05.mat', 'kg_local')
+save('kwLocal2DP05.mat', 'kw_local')
+save('ksLocal2DP05.mat', 'ks_local')
 
 beep on
 beep

@@ -1,6 +1,10 @@
 clear all
 clc
 
+% Add the subfolder to the path
+addpath(fullfile(pwd, 'src'));
+
+
 %% A) Inputs
 fileName = 'inputs.xlsx';
 inputs = readtable(fileName);
@@ -334,7 +338,7 @@ dddd = min(Max_D);
 dddd*((total_a)^2)*12*(1-noo^2) / ((pi^2)*(h^2)*Em)
 t1 = (total_a^2)/(h^2);
 t2 = 12*(1-noo^2)/Em;
-dddd*t1*t2
+% dddd*t1*t2
 beep on
 beep
 %}

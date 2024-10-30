@@ -1,20 +1,93 @@
-function k_local = kLocal3D(p, Eci, Emi, nooi, bi, total_ai, hi, ni, axi, ayi, axyi, kw_bari, ks_bari)
+function k_local = kLocal3D(m, p, Eci, Emi, nooi, bi, total_ai, hi, ni, axi, ayi, axyi, kw_bari, ks_bari)
 
-if p==0
-    data = load('kLocal3DP0.mat');
-elseif p==1
-    data = load('kLocal3DP1.mat');
-elseif p==2
-    data = load('kLocal3DP2.mat');    
-elseif p==3
-    data = load('kLocal3DP3.mat');    
-elseif p==4
-    data = load('kLocal3DP4.mat');
-elseif p==5
-    data = load('kLocal3DP5.mat');
-elseif p==10
-    data = load('kLocal3DP10.mat');
+currentFolder = pwd;
+
+if m==1
+    if p==0
+        filePath = fullfile(currentFolder, 'src', '3D', 'm1', 'p0', 'kLocal.mat');
+        
+    elseif p==1
+        filePath = fullfile(currentFolder, 'src', '3D', 'm1', 'p1', 'kLocal.mat');
+        
+    elseif p==2
+        filePath = fullfile(currentFolder, 'src', '3D', 'm1', 'p2', 'kLocal.mat');
+        
+    elseif p==3
+        filePath = fullfile(currentFolder, 'src', '3D', 'm1', 'p3', 'kLocal.mat');
+        
+    elseif p==4
+        filePath = fullfile(currentFolder, 'src', '3D', 'm1', 'p4', 'kLocal.mat');
+        
+    elseif p==5
+        filePath = fullfile(currentFolder, 'src', '3D', 'm1', 'p5', 'kLocal.mat');
+        
+    elseif p==10
+        filePath = fullfile(currentFolder, 'src', '3D', 'm1', 'p10', 'kLocal.mat');
+        
+    else
+        %pass
+    end
+    
+    
+elseif m==2
+    if p==0
+        filePath = fullfile(currentFolder, 'src', '3D', 'm2', 'p0', 'kLocal.mat');
+        
+    elseif p==1
+        filePath = fullfile(currentFolder, 'src', '3D', 'm2', 'p1', 'kLocal.mat');
+        
+    elseif p==2
+        filePath = fullfile(currentFolder, 'src', '3D', 'm2', 'p2', 'kLocal.mat');
+        
+    elseif p==3
+        filePath = fullfile(currentFolder, 'src', '3D', 'm2', 'p3', 'kLocal.mat');
+        
+    elseif p==4
+        filePath = fullfile(currentFolder, 'src', '3D', 'm2', 'p4', 'kLocal.mat');
+        
+    elseif p==5
+        filePath = fullfile(currentFolder, 'src', '3D', 'm2', 'p5', 'kLocal.mat');
+        
+    elseif p==10
+        filePath = fullfile(currentFolder, 'src', '3D', 'm2', 'p10', 'kLocal.mat');
+        
+    else
+        % Pass
+    end
+    
+elseif m==3
+    if p==0
+        filePath = fullfile(currentFolder, 'src', '3D', 'm3', 'p0', 'kLocal.mat');
+        
+    elseif p==1
+        filePath = fullfile(currentFolder, 'src', '3D', 'm3', 'p1', 'kLocal.mat');
+        
+    elseif p==2
+        filePath = fullfile(currentFolder, 'src', '3D', 'm3', 'p2', 'kLocal.mat');
+        
+    elseif p==3
+        filePath = fullfile(currentFolder, 'src', '3D', 'm3', 'p3', 'kLocal.mat');
+        
+    elseif p==4
+        filePath = fullfile(currentFolder, 'src', '3D', 'm3', 'p4', 'kLocal.mat');
+        
+    elseif p==5
+        filePath = fullfile(currentFolder, 'src', '3D', 'm3', 'p5', 'kLocal.mat');
+        
+    elseif p==10
+        filePath = fullfile(currentFolder, 'src', '3D', 'm3', 'p10', 'kLocal.mat');
+        
+    else
+        % pass
+    end
 else
+    % pass
+end
+
+if exist(filePath, 'file') == 2
+    data = load(filePath);
+else
+    error('File does not exist: %s', filePath);
 end
 
 Ec = sym('Ec');

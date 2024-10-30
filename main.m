@@ -25,34 +25,36 @@ end
 
 
 % --------  Modulus of Elasticity --------%
-global p Ec Em noo b total_a h n ax ay axy kw_bar ks_bar;
+global p m Ec Em Roc Rom noo b total_a h n ax ay axy kw_bar ks_bar;
 
 p = table2array(inputs(4, 3));
-Ec = table2array(inputs(5, 3));
-Em = table2array(inputs(6, 3));
+Rom = table2array(inputs(5, 3));
+Roc = table2array(inputs(6, 3));
+Ec = table2array(inputs(7, 3));
+Em = table2array(inputs(8, 3));
 
 % --------     Poisson's Ratio    --------%
-noo = table2array(inputs(7, 3));
+noo = table2array(inputs(9, 3));
 
 % --------        Dimensions      --------%
-b       = table2array(inputs(9, 3));  % Length
-total_a = table2array(inputs(10, 3));  % Width
-h       = table2array(inputs(11, 3));  % height
+b       = table2array(inputs(11, 3));  % Length
+total_a = table2array(inputs(12, 3));  % Width
+h       = table2array(inputs(13, 3));  % height
 
 % --------       Mode Number      --------%
-m = 1; % constant
+m = table2array(inputs(15, 3));
 
 % --------    Number of Nodal lines    --------%
-n = table2array(inputs(13, 3));
+n = table2array(inputs(16, 3));
 
 % --------       Geometric        --------%
-ax  = table2array(inputs(14, 3));
-ay  = table2array(inputs(15, 3));
-axy = table2array(inputs(16, 3));
+ax  = table2array(inputs(17, 3));
+ay  = table2array(inputs(18, 3));
+axy = table2array(inputs(19, 3));
 
 % -------- Elastic Foundation ---------%
-kw_bar = table2array(inputs(17, 3));
-ks_bar = table2array(inputs(18, 3));
+kw_bar = table2array(inputs(20, 3));
+ks_bar = table2array(inputs(21, 3));
 
 % -------- Boundary Conditions ---------%
 SSSS = table2array(inputs(1, 6));
@@ -84,248 +86,330 @@ else
     error("Please choose only one boundary condition from 'inputs.xlsx' in each run!")
 end
 
-%%  D) Calculating Stiffness Matrix for Each Strip (14*14 for 2D && 18*18 for Quasi-3D)
+
+%%  D) Calculating Stiffness Matrix for Each Strip
 if plateTheory == "2D"
-    k_local = kLocal2D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    k_local = kLocal2D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("k_local")
-    
-    % Using Connectivity between strips to generate k global
-    k__global = sym(zeros(8*n+6, 8*n+6));
-    for j = 1:1:n
-        k___global = sym(zeros(8*n+6, 8*n+6));
-        k___global(8*j-7:8*j+6, 8*j-7:8*j+6) = k_local;
-        k__global = k__global + k___global;
-    end
-    k_global = double(k__global);
-    disp("k_global")
-    
     
 elseif plateTheory == "Quasi-3D"
-    k_local = kLocal3D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    k_local = kLocal3D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("k_local")
-    
-    % Using Connectivity between strips to generate k global
-    k__global = sym(zeros(10*n+8, 10*n+8));
-    for j = 1:1:n
-        k___global = sym(zeros(10*n+8, 10*n+8));
-        k___global(10*j-9:10*j+8, 10*j-9:10*j+8) = k_local;
-        k__global = k__global + k___global;
-    end
-    k_global = double(k__global);
-    disp("k_global")
 end
-
-
-
 
 %% H) Calculating Geometric Stiffness Matrix (14*14 for 2D && 18*18 for Quasi-3D) and Global Geometric Stiffness Matrix (8*n+6)(8*n+6) for 2D and (10*n+8)*(10*n+8) for Quasi-3D
 if plateTheory == "2D"
-    kg_local = kgLocal2D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    kg_local = kgLocal2D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("kg_local")
-    
-    % Using Connectivity between strips to generate kg global
-    kg__global = sym(zeros(8*n+6, 8*n+6));
-    for j = 1:1:n
-        kg___global = sym(zeros(8*n+6, 8*n+6));
-        kg___global(8*j-7:8*j+6, 8*j-7:8*j+6) = kg_local;
-        kg__global = kg__global + kg___global;
-    end
-    kg_global = double(kg__global);
-    disp("kg_global")
-    
     
 elseif plateTheory == "Quasi-3D"
-    kg_local = kgLocal3D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    kg_local = kgLocal3D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("kg_local")
-    
-    % Using Connectivity between strips to generate kg global
-    kg__global = sym(zeros(10*n+8, 10*n+8));
-    for j = 1:1:n
-        kg___global = sym(zeros(10*n+8, 10*n+8));
-        kg___global(10*j-9:10*j+8, 10*j-9:10*j+8) = kg_local;
-        kg__global = kg__global + kg___global;
-    end
-    kg_global = double(kg__global);
-    disp("kg_global")
 end
-
-
 
 %% Calculating Elastic Foundation Stiffness Matrices (Winkler and Pasternak)
-
 if plateTheory == "2D"
     % Winkler
-    kw_local = kwLocal2D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    kw_local = kwLocal2D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("kw_local")
     
-    % Using Connectivity between strips to generate kw global
-    kw__global = sym(zeros(8*n+6, 8*n+6));
-    for j = 1:1:n
-        kw___global = sym(zeros(8*n+6, 8*n+6));
-        kw___global(8*j-7:8*j+6, 8*j-7:8*j+6) = kw_local;
-        kw__global = kw__global + kw___global;
-    end
-    kw_global = double(kw__global);
-    disp("kw_global")
-    
-    
-    
     % Pasternak
-    ks_local = ksLocal2D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    ks_local = ksLocal2D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("ks_local")
     
-    % Using Connectivity between strips to generate ks global
-    ks__global = sym(zeros(8*n+6, 8*n+6));
-    for j = 1:1:n
-        ks___global = sym(zeros(8*n+6, 8*n+6));
-        ks___global(8*j-7:8*j+6, 8*j-7:8*j+6) = ks_local;
-        ks__global = ks__global + ks___global;
-    end
-    ks_global = double(ks__global);
-    disp("ks_global")
-    
-    
 elseif plateTheory == "Quasi-3D"
-    kw_local = kwLocal3D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    % Winkler
+    kw_local = kwLocal3D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("kw_local")
     
-    % Using Connectivity between strips to generate kw global
-    kw__global = sym(zeros(10*n+8, 10*n+8));
-    for i = 1:1:n
-        kw___global = sym(zeros(10*n+8, 10*n+8));
-        kw___global(10*i-9:10*i+8, 10*i-9:10*i+8) = kw_local;
-        kw__global = kw__global + kw___global;
-    end
-    kw_global = double(kw__global);
-    disp("kw_global")
-    
-    
     % Pasternak
-    ks_local = ksLocal3D(p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
+    ks_local = ksLocal3D(m, p, Ec, Em, noo, b, total_a, h, n, ax, ay, axy, kw_bar, ks_bar);
     disp("ks_local")
-    
-    % Using Connectivity between strips to generate ks global
-    ks__global = sym(zeros(10*n+8, 10*n+8));
-    for i = 1:1:n
-        ks___global = sym(zeros(10*n+8, 10*n+8));
-        ks___global(10*i-9:10*i+8, 10*i-9:10*i+8) = ks_local;
-        ks__global = ks__global + ks___global;
-    end
-    ks_global = double(ks__global);
-    disp("ks_global")
 end
 
+%% Generate General stiffness matrix
+%
+kLocal = k_local + kw_local + ks_local;
+disp("Sum of local, winkler, and pasternak stiffness matrices is calculated!")
+%}
 
+%% I) Calculating The Global Stiffness Matrix
+%
 if plateTheory == "2D"
-    if boundaryCondition == "SSSS"
-        rmL = [1, 2, 3, 5];
-        rmR = [1, 2, 3, 5];
-    elseif boundaryCondition == "SSSC"
-        rmL = [1, 2, 3, 5];
-        rmR = [1, 2, 3, 4, 5, 6];
-    elseif boundaryCondition == "SCSC"
-        rmL = [1, 2, 3, 4, 5, 6];
-        rmR = [1, 2, 3, 4, 5, 6];
-    elseif boundaryCondition == "SSSF"
-        rmL = [1, 2, 3, 5];
-        rmR = [];
-    elseif boundaryCondition == "SCSF"
-        rmL = [1, 2, 3, 4, 5, 6];
-        rmR = [];
-    elseif boundaryCondition == "SFSF"
-        rmL = [];
-        rmR = [];
+    kltokg1 = zeros(14, 14, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            kltokg1(:, :, i, j) = kLocal(14*i-13:14*i, 14*j-13:14*j);
+        end
+    end
+    
+    kltokg3 = zeros(8*n+6, 8*n+6, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            for t = 1:1:n
+                kltokg2 = zeros(8*n+6, 8*n+6, m, m);
+                kltokg2(8*t-7:8*t+6, 8*t-7:8*t+6, i, j) = kltokg1(:, :, i, j);
+                kltokg3(:, :, i, j) = kltokg3(:, :, i, j) + kltokg2(:, :, i, j);
+            end
+        end
+    end
+    
+    k_global = zeros(m*(8*n+6), m*(8*n+6));
+    for i = 1:1:m
+        for j = 1:1:m
+            k_global((8*n+6)*i-(8*n+5):(8*n+6)*i, (8*n+6)*j-(8*n+5):(8*n+6)*j) = kltokg3(:, :, i, j);
+        end
     end
     
 elseif plateTheory == "Quasi-3D"
-    if boundaryCondition == "SSSS"
-        rmL = [1, 2, 3, 5, 7];
-        rmR = [1, 2, 3, 5, 7];
-    elseif boundaryCondition == "SSSC"
-        rmL = [1, 2, 3, 5, 7];
-        rmR = [1, 2, 3, 4, 5, 6, 7, 8];
-    elseif boundaryCondition == "SCSC"
-        rmL = [1, 2, 3, 4, 5, 6, 7, 8];
-        rmR = [1, 2, 3, 4, 5, 6, 7, 8];
-    elseif boundaryCondition == "SSSF"
-        rmL = [1, 2, 3, 5, 7];
-        rmR = [];
-    elseif boundaryCondition == "SCSF"
-        rmL = [1, 2, 3, 4, 5, 6, 7, 8];
-        rmR = [];
-    elseif boundaryCondition == "SFSF"
-        rmL = [];
-        rmR = [];
+    kltokg1 = zeros(18, 18, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            kltokg1(:, :, i, j) = kLocal(18*i-17:18*i, 18*j-17:18*j);
+        end
+    end
+    
+    kltokg2 = zeros(10*n+8, 10*n+8, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            for k = 1:1:n
+                kltokg3 = zeros(10*n+8, 10*n+8, m, m);
+                kltokg3(10*k-9:10*k+8, 10*k-9:10*k+8, i, j) = kltokg1(:, :, i, j);
+                kltokg2(:, :, i, j) = kltokg2(:, :, i, j) + kltokg3(:, :, i, j);
+            end
+        end
+    end
+    
+    k_global = zeros(m*(10*n+8), m*(10*n+8));
+    for i = 1:1:m
+        for j = 1:1:m
+            k_global((10*n+8)*i-(10*n+7):(10*n+8)*i, (10*n+8)*j-(10*n+7):(10*n+8)*j) = kltokg2(:, :, i, j);
+        end
     end
 end
 
-f_rmL = fliplr(rmL);
-f_rmR = fliplr(rmR);
+
+disp("Global stiffness matrix is calculated!")
+%}
 
 
+%% Calculating The Global Geometric Stiffness Matrix
+%
 if plateTheory == "2D"
-    for i = 1:length(rmL)
-        k_global(8*n+f_rmL(i), :) = [];
-        k_global(:, 8*n+f_rmL(i)) = [];
-
-        kg_global(8*n+f_rmL(i), :) = [];
-        kg_global(:, 8*n+f_rmL(i)) = [];
-        
-        kw_global(8*n+f_rmL(i), :) = [];
-        kw_global(:, 8*n+f_rmL(i)) = [];
-        
-        ks_global(8*n+f_rmL(i), :) = [];
-        ks_global(:, 8*n+f_rmL(i)) = [];
+    kgtokgg1 = zeros(14, 14, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            kgtokgg1(:, :, i, j) = kg_local(14*i-13:14*i, 14*j-13:14*j);
+        end
     end
-
-    for i = 1:length(rmR)
-        k_global(f_rmR(i), :) = [];
-        k_global(:, f_rmR(i)) = [];
-        
-        kg_global(f_rmR(i), :) = [];
-        kg_global(:, f_rmR(i)) = [];
-        
-        kw_global(f_rmR(i), :) = [];
-        kw_global(:, f_rmR(i)) = [];
-        
-        ks_global(f_rmR(i), :) = [];
-        ks_global(:, f_rmR(i)) = [];
+    
+    kgtokgg3 = zeros(8*n+6, 8*n+6, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            for t = 1:1:n
+                kgtokgg2 = zeros(8*n+6, 8*n+6, m, m);
+                kgtokgg2(8*t-7:8*t+6, 8*t-7:8*t+6, i, j) = kgtokgg1(:, :, i, j);
+                kgtokgg3(:, :, i, j) = kgtokgg3(:, :, i, j) + kgtokgg2(:, :, i, j);
+            end
+        end
     end
+    
+    kg_global = zeros(m*(8*n+6), m*(8*n+6));
+    for i = 1:1:m
+        for j = 1:1:m
+            kg_global((8*n+6)*i-(8*n+5):(8*n+6)*i, (8*n+6)*j-(8*n+5):(8*n+6)*j) = kgtokgg3(:, :, i, j);
+        end
+    end
+elseif plateTheory == "Quasi-3D"
+    kgtokgg1 = zeros(18, 18, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            kgtokgg1(:, :, i, j) = kg_local(18*i-17:18*i, 18*j-17:18*j);
+        end
+    end
+    
+    kgtokgg2 = zeros(10*n+8, 10*n+8, m, m);
+    for i = 1:1:m
+        for j = 1:1:m
+            for k = 1:1:n
+                kgtokgg3 = zeros(10*n+8, 10*n+8, m, m);
+                kgtokgg3(10*k-9:10*k+8, 10*k-9:10*k+8, i, j) = kgtokgg1(:, :, i, j);
+                kgtokgg2(:, :, i, j) = kgtokgg2(:, :, i, j) + kgtokgg3(:, :, i, j);
+            end
+        end
+    end
+    
+    kg_global = zeros(m*(10*n+8), m*(10*n+8));
+    for i = 1:1:m
+        for j = 1:1:m
+            kg_global((10*n+8)*i-(10*n+7):(10*n+8)*i, (10*n+8)*j-(10*n+7):(10*n+8)*j) = kgtokgg2(:, :, i, j);
+        end
+    end
+end
+
+disp("Global geometry stiffness matrix is calculated!")
+%}
+
+
+%% F) Applying Boundary Condition for Global Stiffness Matrix
+rm = [];
+if plateTheory == "2D"
+    if boundaryCondition == "SSSS"
+        for i = m:-1:1
+            rm = [rm, (8*n+6)*i-1]; %
+            rm = [rm, (8*n+6)*i-3];
+            rm = [rm, (8*n+6)*i-4];
+            rm = [rm, (8*n+6)*i-5];
+            
+            rm = [rm, (8*n+6)*(i-1)+5];
+            rm = [rm, (8*n+6)*(i-1)+3];
+            rm = [rm, (8*n+6)*(i-1)+2];
+            rm = [rm, (8*n+6)*(i-1)+1];
+        end
+    elseif boundaryCondition == "SSSC"
+        for i = m:-1:1
+            rm = [rm, (8*n+6)*i-1];
+            rm = [rm, (8*n+6)*i-3];
+            rm = [rm, (8*n+6)*i-4];
+            rm = [rm, (8*n+6)*i-5];
+            
+            rm = [rm, (8*n+6)*(i-1)+6];
+            rm = [rm, (8*n+6)*(i-1)+5];
+            rm = [rm, (8*n+6)*(i-1)+4];
+            rm = [rm, (8*n+6)*(i-1)+3];
+            rm = [rm, (8*n+6)*(i-1)+2];
+            rm = [rm, (8*n+6)*(i-1)+1];
+        end
+    elseif boundaryCondition == "SCSC"
+        for i = m:-1:1
+            rm = [rm, (8*n+6)*i];
+            rm = [rm, (8*n+6)*i-1];
+            rm = [rm, (8*n+6)*i-2];
+            rm = [rm, (8*n+6)*i-3];
+            rm = [rm, (8*n+6)*i-4];
+            rm = [rm, (8*n+6)*i-5];
+            
+            rm = [rm, (8*n+6)*(i-1)+6];
+            rm = [rm, (8*n+6)*(i-1)+5];
+            rm = [rm, (8*n+6)*(i-1)+4];
+            rm = [rm, (8*n+6)*(i-1)+3];
+            rm = [rm, (8*n+6)*(i-1)+2];
+            rm = [rm, (8*n+6)*(i-1)+1];
+        end
+    elseif boundaryCondition == "SSSF"
+        for i = m:-1:1
+            rm = [rm, (8*n+6)*i-1];
+            rm = [rm, (8*n+6)*i-3];
+            rm = [rm, (8*n+6)*i-4];
+            rm = [rm, (8*n+6)*i-5];
+        end
+    elseif boundaryCondition == "SCSF"
+        for i = m:-1:1
+            rm = [rm, (8*n+6)*i];
+            rm = [rm, (8*n+6)*i-1];
+            rm = [rm, (8*n+6)*i-2];
+            rm = [rm, (8*n+6)*i-3];
+            rm = [rm, (8*n+6)*i-4];
+            rm = [rm, (8*n+6)*i-5];
+        end
+    elseif boundaryCondition == "SFSF"
+        % pass
+    end
+    
     
     
 elseif plateTheory == "Quasi-3D"
-    for i = 1:length(rmL)
-        k_global(10*n+f_rmL(i), :) = [];
-        k_global(:, 10*n+f_rmL(i)) = [];
+    if boundaryCondition == "SSSS"
+        for i = m:-1:1
+            rm = [rm, (10*n+8)*i-1];
+            rm = [rm, (10*n+8)*i-3];
+            rm = [rm, (10*n+8)*i-5];
+            rm = [rm, (10*n+8)*i-6];
+            rm = [rm, (10*n+8)*i-7];
+            
+            rm = [rm, (10*n+8)*(i-1)+7];
+            rm = [rm, (10*n+8)*(i-1)+5];
+            rm = [rm, (10*n+8)*(i-1)+3];
+            rm = [rm, (10*n+8)*(i-1)+2];
+            rm = [rm, (10*n+8)*(i-1)+1];
+        end
+    elseif boundaryCondition == "SSSC"
+        for i = m:-1:1
+            rm = [rm, (10*n+8)*i-1];
+            rm = [rm, (10*n+8)*i-3];
+            rm = [rm, (10*n+8)*i-5];
+            rm = [rm, (10*n+8)*i-6];
+            rm = [rm, (10*n+8)*i-7];
+            
+            rm = [rm, (10*n+8)*(i-1)+8];
+            rm = [rm, (10*n+8)*(i-1)+7];
+            rm = [rm, (10*n+8)*(i-1)+6];
+            rm = [rm, (10*n+8)*(i-1)+5];
+            rm = [rm, (10*n+8)*(i-1)+4];
+            rm = [rm, (10*n+8)*(i-1)+3];
+            rm = [rm, (10*n+8)*(i-1)+2];
+            rm = [rm, (10*n+8)*(i-1)+1];
+        end
+    elseif boundaryCondition == "SCSC"
+        for i = m:-1:1
+            rm = [rm, (10*n+8)*i];
+            rm = [rm, (10*n+8)*i-1];
+            rm = [rm, (10*n+8)*i-2];
+            rm = [rm, (10*n+8)*i-3];
+            rm = [rm, (10*n+8)*i-4];
+            rm = [rm, (10*n+8)*i-5];
+            rm = [rm, (10*n+8)*i-6];
+            rm = [rm, (10*n+8)*i-7];
+            
+            rm = [rm, (10*n+8)*(i-1)+8];
+            rm = [rm, (10*n+8)*(i-1)+7];
+            rm = [rm, (10*n+8)*(i-1)+6];
+            rm = [rm, (10*n+8)*(i-1)+5];
+            rm = [rm, (10*n+8)*(i-1)+4];
+            rm = [rm, (10*n+8)*(i-1)+3];
+            rm = [rm, (10*n+8)*(i-1)+2];
+            rm = [rm, (10*n+8)*(i-1)+1];
+        end
+    elseif boundaryCondition == "SSSF"
+        for i = m:-1:1
+            rm = [rm, (10*n+8)*i-1];
+            rm = [rm, (10*n+8)*i-3];
+            rm = [rm, (10*n+8)*i-5];
+            rm = [rm, (10*n+8)*i-6];
+            rm = [rm, (10*n+8)*i-7];
+        end
         
-        kg_global(10*n+f_rmL(i), :) = [];
-        kg_global(:, 10*n+f_rmL(i)) = [];
-        
-        kw_global(10*n+f_rmL(i), :) = [];
-        kw_global(:, 10*n+f_rmL(i)) = [];
-        
-        ks_global(10*n+f_rmL(i), :) = [];
-        ks_global(:, 10*n+f_rmL(i)) = [];
-    end
-    
-    for i = 1:length(rmR)
-        k_global(f_rmR(i), :) = [];
-        k_global(:, f_rmR(i)) = [];
-        
-        kg_global(f_rmR(i), :) = [];
-        kg_global(:, f_rmR(i)) = [];
-        
-        kw_global(f_rmR(i), :) = [];
-        kw_global(:, f_rmR(i)) = [];
-        
-        ks_global(f_rmR(i), :) = [];
-        ks_global(:, f_rmR(i)) = [];
+    elseif boundaryCondition == "SCSF"
+        for i = m:-1:1
+            rm = [rm, (10*n+8)*i];
+            rm = [rm, (10*n+8)*i-1];
+            rm = [rm, (10*n+8)*i-2];
+            rm = [rm, (10*n+8)*i-3];
+            rm = [rm, (10*n+8)*i-4];
+            rm = [rm, (10*n+8)*i-5];
+            rm = [rm, (10*n+8)*i-6];
+            rm = [rm, (10*n+8)*i-7];
+        end
+    elseif boundaryCondition == "SFSF"
+        % pass
     end
 end
 
+disp(rm)
+%
+s_rm = size(rm);
+for i = 1:1:s_rm(2)
+    k_global(rm(i), :) = [];
+    kg_global(rm(i), :) = [];
+    
+    k_global(:, rm(i)) = [];
+    kg_global(:, rm(i)) = [];
+end
+%}
 
+%
 %% K) Calculating Eigenvalue and Eigenvector
-[Vec, Landa] = eig(k_global+kw_global+ks_global, kg_global);
+[Vec, Landa] = eig(k_global, kg_global);
 disp("Eigenvalue")
 
 
@@ -335,10 +419,11 @@ dddd = min(Max_D);
 
 
 %% M) Non-dimensionalization
-dddd*((total_a)^2)*12*(1-noo^2) / ((pi^2)*(h^2)*Em)
+bbb = dddd*((total_a)^2)*12*(1-noo^2) / ((pi^2)*(h^2)*Em);
+fprintf('%.5f\n', bbb);
 t1 = (total_a^2)/(h^2);
 t2 = 12*(1-noo^2)/Em;
-% dddd*t1*t2
+dddd*t1*t2
 beep on
 beep
 %}
